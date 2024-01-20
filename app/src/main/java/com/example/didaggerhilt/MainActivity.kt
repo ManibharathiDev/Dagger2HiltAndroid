@@ -2,9 +2,16 @@ package com.example.didaggerhilt
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.google.gson.Gson
+import dagger.Binds
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.scopes.ActivityScoped
 import dagger.hilt.android.scopes.FragmentScoped
+import dagger.hilt.components.SingletonComponent
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -26,7 +33,8 @@ class MainActivity : AppCompatActivity() {
 }
 
 // We cannot inject with interfact type
-class TestClass @Inject constructor(private val testOtherClass: Test){
+class TestClass @Inject constructor(private val test: TestInterface
+, private val gson: Gson){
 
     fun doTest():String
     {
@@ -34,13 +42,13 @@ class TestClass @Inject constructor(private val testOtherClass: Test){
     }
 
     fun doOtherTest():String{
-        return testOtherClass.doOtherTest()
+        return test.doOtherTest()
     }
 
 
 }
 
-class TestOtherClass @Inject constructor():Test{
+class TestInterfaceImpl @Inject constructor():TestInterface{
     override fun doOtherTest(): String
     {
         return "Good Thing"
@@ -48,7 +56,37 @@ class TestOtherClass @Inject constructor():Test{
 
 }
 
-interface Test{
+interface TestInterface{
     fun doOtherTest():String
+}
+
+/*@InstallIn(ActivityComponent::class)
+@Module
+abstract class MyModule{
+    @ActivityScoped
+    @Binds
+    abstract fun bindSomeDependency(
+        someImpl:TestInterfaceImpl
+    ):TestInterface
+
+    @ActivityScoped
+    @Binds
+    abstract fun bindGson(gson: Gson):Gson
+}*/
+
+@InstallIn(SingletonComponent::class)
+@Module
+class MyModule{
+    @Singleton
+    @Provides
+    fun provideSomeInterfaceImpl():TestInterface {
+        return TestInterfaceImpl()
+    }
+
+    @Singleton
+    @Provides
+    fun provideGsonImpl():Gson{
+        return Gson()
+    }
 }
 
