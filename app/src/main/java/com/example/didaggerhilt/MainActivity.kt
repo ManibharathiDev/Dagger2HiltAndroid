@@ -3,7 +3,10 @@ package com.example.didaggerhilt
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.scopes.ActivityScoped
+import dagger.hilt.android.scopes.FragmentScoped
 import javax.inject.Inject
+import javax.inject.Singleton
 
 
 @AndroidEntryPoint
@@ -22,14 +25,12 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
+// @FragmentScoped We can only injected in Fragment
+// @ActivityScoped We can only injected in Activity
+// @Singleton we can access global
 //Constructor Injection
-class TestClass @Inject constructor(testOtherClass: TestOtherClass){
+class TestClass @Inject constructor(private val testOtherClass: TestOtherClass){
 
-    private var testOtherClass: TestOtherClass
-
-    init {
-        this.testOtherClass = testOtherClass
-    }
     fun doTest():String
     {
         return "Testing";
