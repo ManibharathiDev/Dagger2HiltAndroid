@@ -10,6 +10,7 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
 
 
+    // Field Injection
     @Inject
     lateinit var testClass: TestClass
 
@@ -21,6 +22,7 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
+//Constructor Injection
 class TestClass @Inject constructor(testOtherClass: TestOtherClass){
 
     private var testOtherClass: TestOtherClass
