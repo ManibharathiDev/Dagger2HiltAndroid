@@ -25,11 +25,8 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-// @FragmentScoped We can only injected in Fragment
-// @ActivityScoped We can only injected in Activity
-// @Singleton we can access global
-//Constructor Injection
-class TestClass @Inject constructor(private val testOtherClass: TestOtherClass){
+// We cannot inject with interfact type
+class TestClass @Inject constructor(private val testOtherClass: Test){
 
     fun doTest():String
     {
@@ -43,9 +40,15 @@ class TestClass @Inject constructor(private val testOtherClass: TestOtherClass){
 
 }
 
-class TestOtherClass @Inject constructor(){
-    fun doOtherTest():String{
-        return "Do other testing!";
+class TestOtherClass @Inject constructor():Test{
+    override fun doOtherTest(): String
+    {
+        return "Good Thing"
     }
+
+}
+
+interface Test{
+    fun doOtherTest():String
 }
 
