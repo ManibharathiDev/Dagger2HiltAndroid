@@ -13,6 +13,7 @@ import dagger.hilt.android.scopes.ActivityScoped
 import dagger.hilt.android.scopes.FragmentScoped
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Inject
+import javax.inject.Qualifier
 import javax.inject.Singleton
 
 
@@ -28,12 +29,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         println(testClass.doTest())
-        println(testClass.doOtherTest())
+        println(testClass.doInterface1())
+        println(testClass.doInterface2())
     }
 }
 
 // We cannot inject with interfact type
-class TestClass @Inject constructor(private val test: TestInterface
+class TestClass @Inject constructor(@Impl1 private val someInterfaceImpl1: SomeInterface,
+                                    @Impl2 private val someInterfaceImpl2:SomeInterface
 , private val gson: Gson){
 
     fun doTest():String
@@ -41,23 +44,34 @@ class TestClass @Inject constructor(private val test: TestInterface
         return "Testing";
     }
 
-    fun doOtherTest():String{
-        return test.doOtherTest()
+    fun doInterface1():String{
+        return someInterfaceImpl1.doTest()
+    }
+
+    fun doInterface2():String{
+        return someInterfaceImpl2.doTest()
     }
 
 
 }
 
-class TestInterfaceImpl @Inject constructor():TestInterface{
-    override fun doOtherTest(): String
+class SomeInterfaceImpl1 @Inject constructor():SomeInterface{
+    override fun doTest(): String
     {
-        return "Good Thing"
+        return "Interace 2"
+    }
+}
+
+class SomeInterfaceImpl2 @Inject constructor():SomeInterface{
+    override fun doTest(): String
+    {
+        return "Interface 1"
     }
 
 }
 
-interface TestInterface{
-    fun doOtherTest():String
+interface SomeInterface{
+    fun doTest():String
 }
 
 /*@InstallIn(ActivityComponent::class)
@@ -77,10 +91,18 @@ abstract class MyModule{
 @InstallIn(SingletonComponent::class)
 @Module
 class MyModule{
+    @Impl1
     @Singleton
     @Provides
-    fun provideSomeInterfaceImpl():TestInterface {
-        return TestInterfaceImpl()
+    fun provideSomeInterfaceImpl():SomeInterface {
+        return SomeInterfaceImpl1()
+    }
+
+    @Impl2
+    @Singleton
+    @Provides
+    fun provideSomeInterfaceImpl2():SomeInterface {
+        return SomeInterfaceImpl2()
     }
 
     @Singleton
@@ -89,4 +111,17 @@ class MyModule{
         return Gson()
     }
 }
+
+/**
+ * Create Custom Implementation for same type
+ *
+ */
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class Impl1
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class Impl2
 
